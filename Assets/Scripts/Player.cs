@@ -15,6 +15,7 @@ public class Player : MonoBehaviour
 
     [Header("Physics")]
     public float maxSpeed = 7f;
+    public float linearDrag = 4f;
 
     // Start is called before the first frame update
     void Start()
@@ -30,7 +31,8 @@ public class Player : MonoBehaviour
 
     void FixedUpdate()
     {
-        moveCharacter(direction.x);    
+        moveCharacter(direction.x);
+        modifyPhysics();
     }
 
     void moveCharacter(float horizontal)
@@ -38,8 +40,9 @@ public class Player : MonoBehaviour
         rb.AddForce(Vector2.right * horizontal * moveSpeed);
 
         float velocity = Mathf.Abs(rb.velocity.x);
-        Debug.Log(velocity);
+        //Debug.Log(velocity);
         animator.SetFloat("horizontal", velocity);
+        Debug.Log(animator.GetFloat("horizontal"));
 
         if((horizontal > 0 && !facingRight) || (horizontal < 0 && facingRight))
         {
@@ -48,6 +51,17 @@ public class Player : MonoBehaviour
         if(Mathf.Abs(rb.velocity.x) > maxSpeed)
         {
             rb.velocity = new Vector2(Mathf.Sign(rb.velocity.x) * maxSpeed, rb.velocity.y);
+        }
+    }
+
+    void modifyPhysics()
+    {
+        if(Mathf.Abs(direction.x) < 0.4f)
+        {
+            rb.drag = linearDrag;
+        } else
+        {
+            rb.drag = 0;
         }
     }
 
