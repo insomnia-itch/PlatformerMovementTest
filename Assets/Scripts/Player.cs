@@ -11,11 +11,14 @@ public class Player : MonoBehaviour
 
     [Header("Verical Movement")]
     public float jumpSpeed = 15f;
+    public float jumpDelay = 0.25f;
+    private float jumpTimer;
 
     [Header("Components")]
     public Rigidbody2D rb;
     public Animator animator;
     public LayerMask groundLayer;
+    public GameObject characterHolder;
 
     [Header("Physics")]
     public float maxSpeed = 7f;
@@ -26,6 +29,7 @@ public class Player : MonoBehaviour
     [Header("Collision")]
     public bool onGround = false;
     public float groundLength = 0.6f;
+    public Vector3 colliderOffset;
 
     // Start is called before the first frame update
     void Start()
@@ -36,11 +40,12 @@ public class Player : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        onGround = Physics2D.Raycast(transform.position, Vector2.down, groundLength, groundLayer);
+        onGround = Physics2D.Raycast(transform.position + colliderOffset, Vector2.down, groundLength, groundLayer) || Physics2D.Raycast(transform.position - colliderOffset, Vector2.down, groundLength, groundLayer);
 
-        if (Input.GetButtonDown("Jump") && onGround)
+        if (Input.GetButtonDown("Jump"))
         {
-            Jump();
+            jumpTimer = Time.time + jumpDelay;
+            //Jump();
         }
         direction = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
     }
@@ -48,6 +53,10 @@ public class Player : MonoBehaviour
     void FixedUpdate()
     {
         moveCharacter(direction.x);
+        if(jumpTimer > Time.time && onGround)
+        {
+            Jump();
+        }
         modifyPhysics();
     }
 
@@ -74,6 +83,8 @@ public class Player : MonoBehaviour
     {
         rb.velocity = new Vector2(rb.velocity.x, 0);
         rb.AddForce(Vector2.up * jumpSpeed, ForceMode2D.Impulse);
+        jumpTimer = 0;
+        StartCoroutine(JumpSqueeze(0.5f, 1.2f, 0.1f));
     }
 
     void modifyPhysics()
@@ -112,9 +123,31 @@ public class Player : MonoBehaviour
         transform.rotation = Quaternion.Euler(0, facingRight ? 0 : 180, 0);
     }
 
+    IEnumerator JumpSqueeze(float xSqueeze, float ySqueeze, float seconds)
+    {
+        Vector3 originalSize = Vector3.one;
+        Vector3 newSize = new Vector3(xSqueeze, ySqueeze, originalSize.z);
+        float t = 0f;
+        while (t <= 1.0)
+        {
+            t += Time.deltaTime / seconds;
+            characterHolder.transform.localScale = Vector3.Lerp(originalSize, newSize, t);
+            yield return null;
+        }
+        t = 0f;
+        while (t <= 1.0)
+        {
+            t += Time.deltaTime / seconds;
+            characterHolder.transform.localScale = Vector3.Lerp(newSize, originalSize, t);
+            yield return null;
+        }
+
+    }
+
     private void OnDrawGizmos()
     {
         Gizmos.color = Color.red;
-        Gizmos.DrawLine(transform.position, transform.position + Vector3.down * groundLength);
+        Gizmos.DrawLine(transform.position + colliderOffset, transform.position + colliderOffset + Vector3.down * groundLength);
+        Gizmos.DrawLine(transform.position - colliderOffset, transform.position - colliderOffset + Vector3.down * groundLength);
     }
 }
