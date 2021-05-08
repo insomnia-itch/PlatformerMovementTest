@@ -56,7 +56,9 @@ public class Player : MonoBehaviour
 
     void modifyPhysics()
     {
-        if(Mathf.Abs(direction.x) < 0.4f)
+        bool changingDirections = (direction.x > 0 && rb.velocity.x < 0) || (direction.x < 0 && rb.velocity.x > 0);
+
+        if(Mathf.Abs(direction.x) < 0.4f || changingDirections)
         {
             rb.drag = linearDrag;
         } else
