@@ -40,7 +40,13 @@ public class Player : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        bool wasOnGround = onGround;
         onGround = Physics2D.Raycast(transform.position + colliderOffset, Vector2.down, groundLength, groundLayer) || Physics2D.Raycast(transform.position - colliderOffset, Vector2.down, groundLength, groundLayer);
+
+        if(!wasOnGround && onGround)
+        {
+            StartCoroutine(JumpSqueeze(1.25f, 0.8f, 0.05f));
+        }
 
         if (Input.GetButtonDown("Jump"))
         {
@@ -63,13 +69,11 @@ public class Player : MonoBehaviour
     void moveCharacter(float horizontal)
     {
         rb.AddForce(Vector2.right * horizontal * moveSpeed);
+        animator.SetFloat("horizontal", Mathf.Abs(rb.velocity.x));
+        animator.SetFloat("vertical", rb.velocity.y);
+        Debug.Log(animator.GetFloat("vertical"));
 
-        float velocity = Mathf.Abs(rb.velocity.x);
-        //Debug.Log(velocity);
-        animator.SetFloat("horizontal", velocity);
-        Debug.Log(animator.GetFloat("horizontal"));
-
-        if((horizontal > 0 && !facingRight) || (horizontal < 0 && facingRight))
+        if ((horizontal > 0 && !facingRight) || (horizontal < 0 && facingRight))
         {
             Flip();
         }
