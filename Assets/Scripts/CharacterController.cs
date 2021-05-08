@@ -15,7 +15,7 @@ public class CharacterController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        animator.SetFloat("horizontal", Mathf.Abs(Input.GetAxis("Horizontal")));
-        animator.SetFloat("vertical", Input.GetAxis("Vertical"));
+        //animator.SetFloat("horizontal", Mathf.Abs(Input.GetAxis("Horizontal")));
+        //animator.SetFloat("vertical", Input.GetAxis("Vertical"));
     }
 }
