@@ -185,6 +185,7 @@ MonoBehaviour:
   direction: {x: 0, y: 0}
   jumpSpeed: 8
   jumpDelay: 0.25
+  airDragMultiplier: 0.4
   rb: {fileID: 240408995}
   animator: {fileID: 546158609}
   groundLayer:
@@ -192,7 +193,7 @@ MonoBehaviour:
     m_Bits: 512
   characterHolder: {fileID: 959545711}
   maxSpeed: 7
-  linearDrag: 4.5
+  linearDrag: 6.5
   gravity: 1
   fallMultiplier: 5
   onGround: 0
