@@ -12,6 +12,7 @@ public class Player : MonoBehaviour
     [Header("Verical Movement")]
     public float jumpSpeed = 15f;
     public float jumpDelay = 0.25f;
+    public float airDragMultiplier = 0.15f;
     private float jumpTimer;
 
     [Header("Components")]
@@ -109,7 +110,7 @@ public class Player : MonoBehaviour
         } else
         {
             rb.gravityScale = gravity;
-            rb.drag = linearDrag * 0.15f;
+            rb.drag = linearDrag * airDragMultiplier;
             if(rb.velocity.y < 0)
             {
                 rb.gravityScale = gravity * fallMultiplier;
