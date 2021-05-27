@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
+    public ParticleSystem dust;
+
     [Header("Horizontal Movement")]
     public float moveSpeed = 10f;
     public Vector2 direction;
@@ -86,6 +88,7 @@ public class Player : MonoBehaviour
 
     void Jump()
     {
+        CreateDust();
         rb.velocity = new Vector2(rb.velocity.x, 0);
         rb.AddForce(Vector2.up * jumpSpeed, ForceMode2D.Impulse);
         jumpTimer = 0;
@@ -123,6 +126,7 @@ public class Player : MonoBehaviour
 
     void Flip()
     {
+        CreateDust();
         facingRight = !facingRight;
 
         transform.rotation = Quaternion.Euler(0, facingRight ? 0 : 180, 0);
@@ -154,5 +158,10 @@ public class Player : MonoBehaviour
         Gizmos.color = Color.red;
         Gizmos.DrawLine(transform.position + colliderOffset, transform.position + colliderOffset + Vector3.down * groundLength);
         Gizmos.DrawLine(transform.position - colliderOffset, transform.position - colliderOffset + Vector3.down * groundLength);
+    }
+
+    void CreateDust()
+    {
+        dust.Play();
     }
 }
