@@ -17,6 +17,14 @@ public class Player : MonoBehaviour
     public float airDragMultiplier = 0.15f;
     private float jumpTimer;
 
+    [Header("Wall Jump")]
+    public float wallJumpTime = 0.2f;
+    public float wallSlideSpeed = 0.3f;
+    public float wallDistance = 0.5f;
+    bool isWallSiding = false;
+    RaycastHit2D wallCheckHit;
+    float jumpTime;
+
     [Header("Components")]
     public Rigidbody2D rb;
     public Animator animator;
@@ -62,11 +70,34 @@ public class Player : MonoBehaviour
     void FixedUpdate()
     {
         moveCharacter(direction.x);
-        if(jumpTimer > Time.time && onGround)
+        if(jumpTimer > Time.time && onGround || isWallSiding && Input.GetButtonDown("Jump"))
         {
             Jump();
         }
         modifyPhysics();
+
+        // Wall Jump stuff
+        if (facingRight)
+        {
+            wallCheckHit = Physics2D.Raycast(transform.position, new Vector2(wallDistance, 0), wallDistance, groundLayer);
+        } else
+        {
+            wallCheckHit = Physics2D.Raycast(transform.position, new Vector2(-wallDistance, 0), wallDistance, groundLayer);
+        }
+
+        if (wallCheckHit && !onGround && direction.x != 0)
+        {
+            isWallSiding = true;
+            jumpTime = Time.time + wallJumpTime;
+        } else if(jumpTime < Time.time)
+        {
+            isWallSiding = false;
+        }
+
+        if (isWallSiding)
+        {
+            rb.velocity = new Vector2(rb.velocity.x, Mathf.Clamp(rb.velocity.y, wallSlideSpeed, float.MaxValue));
+        }
     }
 
     void moveCharacter(float horizontal)
